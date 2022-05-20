@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+
+}
+
+model City {
+
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  stateId   Int
+  state     State    @relation(fields: [stateId], references: [id])
+
+  @@map("cities")
+}
+
+model State {
+  id        Int      @id @default(autoincrement())
+  name      String
+  fu        String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  City      City[]
+
+  @@map("states")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String
+  vehicles  Vehicle[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Vehicle {
+  id           Int      @id
+  maker        String
+  model        String
+  year         String
+  plate        String
+  color        String
+  km           String
+  purchaseYear String
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("vehicles")
+  User   User? @relation(fields: [userId], references: [id])
+  userId Int?
+}
