@@ -167,6 +167,23 @@ class UserController {
       return response.status(500).json({ message: 'Internal server error' });
     }
   }
+
+  async listUsers(_request, response) {
+    try {
+      const users = await database.user.findMany({
+        include: { vehicles: true },
+      });
+
+      if (!users) {
+        return response.status(404).json({ message: 'Users not founded' });
+      }
+
+      return response.status(200).json(users);
+    } catch (error) {
+      console.log(error);
+      return response.status(500).json({ message: 'Internal server error' });
+    }
+  }
 }
 
 module.exports = new UserController();

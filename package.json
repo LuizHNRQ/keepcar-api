@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "nodemon src/server.js",
     "start:dev": "DEBUG=sequelize:sql* NODE_ENV=development nodemon src/server.js",
     "start:hom": "DEBUG=sequelize:sql* NODE_ENV=homologation nodemon src/server.js",
     "migrate:dev": "npx prisma migrate dev",
@@ -32,7 +32,7 @@
     "eslint": "^7.26.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
-    "nodemon": "^2.0.7",
+    "nodemon": "^2.0.19",
     "prisma": "^3.4.1",
     "sequelize-cli": "^6.2.0"
   },

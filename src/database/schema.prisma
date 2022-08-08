@@ -48,18 +48,19 @@ model User {
 }
 
 model Vehicle {
-  id           Int      @id
+  id           String   @id
+  nickname     String   @default("")
   maker        String
   model        String
   year         String
   plate        String
   color        String
-  km           String
+  km           Int
   purchaseYear String
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  @@map("vehicles")
   User   User? @relation(fields: [userId], references: [id])
   userId Int?
+  @@map("vehicles")
 }
