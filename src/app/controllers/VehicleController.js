@@ -112,6 +112,9 @@ class VehicleController {
       const vehicles = await database.vehicle.findMany({
         where: { userId: Number(userId) },
         include: { events: true },
+        orderBy: {
+          updatedAt: 'desc',
+        },
       });
 
       if (!vehicles) {
@@ -141,16 +144,22 @@ class VehicleController {
         return response.status(404).json({ message: 'Vehicle not found' });
       }
 
-      await database.vehicle.update({
+      const { color, nickname } = request.body;
+
+      const fileConverted = request?.file;
+
+      const updatedvehicle = await database.vehicle.update({
         where: {
           id: vehicleId,
         },
         data: {
-          ...request.body,
+          color,
+          nickname,
+          photo: fileConverted?.filename || '',
         },
       });
 
-      return response.status(200).json('ok');
+      return response.status(201).json({ updatedvehicle });
     } catch (error) {
       console.log(error);
       return response.status(500).json({ message: 'Internal server error' });

@@ -31,7 +31,11 @@ routes.post('/vehicles', upload.single('file'), VehicleController.store);
 routes.get('/vehicles', VehicleController.listVehicles);
 routes.get('/vehicles/:userId', VehicleController.listVehiclesByUserId);
 routes.get('/vehicle/:vehicleId', VehicleController.showVehicleById);
-routes.put('/vehicle/:vehicleId', VehicleController.updateVehicle);
+routes.put(
+  '/vehicle/:vehicleId',
+  upload.single('file'),
+  VehicleController.updateVehicle,
+);
 
 routes.post('/event', upload.single('file'), EventController.store);
 routes.get('/event/photo/:filename', EventController.showEventPhoto);
