@@ -9,11 +9,9 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-
 }
 
 model City {
-
   id        Int      @id @default(autoincrement())
   name      String
   createdAt DateTime @default(now()) @map("created_at")
@@ -48,19 +46,49 @@ model User {
 }
 
 model Vehicle {
-  id           String   @id
-  nickname     String   @default("")
+  id           String  @id
+  nickname     String  @default("")
   maker        String
   model        String
   year         String
   plate        String
   color        String
-  km           Int
+  km           String
   purchaseYear String
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  photo        String?
+  makerId      String?
+  modelId      String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   User   User? @relation(fields: [userId], references: [id])
   userId Int?
+
+  events Events[]
+
   @@map("vehicles")
+}
+
+model Events {
+  id          Int       @id @default(autoincrement())
+  title       String
+  km          Int
+  description String
+  pictures    String
+  date        DateTime? @default(now()) @map("event_date")
+  createdAt   DateTime? @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+
+  Vehicle   Vehicle? @relation(fields: [vehicleId], references: [id])
+  vehicleId String?
+
+  Type        EventType? @relation(fields: [eventTypeId], references: [id])
+  eventTypeId Int?
+}
+
+model EventType {
+  id     Int      @id @default(autoincrement())
+  title  String
+  Events Events[]
 }

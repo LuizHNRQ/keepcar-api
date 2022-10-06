@@ -12,6 +12,8 @@ class VehicleController {
         'km',
         'purchaseYear',
         'userId',
+        'makerId',
+        'modelId',
       ];
 
       for (const field of requiredFields) {
@@ -32,7 +34,11 @@ class VehicleController {
         purchaseYear,
         nickname,
         userId,
+        makerId,
+        modelId,
       } = request.body;
+
+      const fileConverted = request?.file;
 
       const vehicle = await database.vehicle.create({
         data: {
@@ -45,7 +51,10 @@ class VehicleController {
           km,
           nickname,
           purchaseYear,
-          userId,
+          userId: +userId,
+          makerId,
+          modelId,
+          photo: fileConverted?.filename || '',
         },
       });
 
@@ -64,6 +73,9 @@ class VehicleController {
       const vehicle = await database.vehicle.findUnique({
         where: {
           id: vehicleId,
+        },
+        include: {
+          events: true,
         },
       });
 
@@ -99,6 +111,7 @@ class VehicleController {
 
       const vehicles = await database.vehicle.findMany({
         where: { userId: Number(userId) },
+        include: { events: true },
       });
 
       if (!vehicles) {
