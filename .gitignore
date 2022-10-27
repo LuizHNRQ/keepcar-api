@@ -4,3 +4,4 @@ node_modules
 /temp/*
 *.lock
 package-lock.json
+public/uploads/*
