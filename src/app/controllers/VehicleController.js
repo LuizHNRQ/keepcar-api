@@ -48,13 +48,14 @@ class VehicleController {
           year,
           plate,
           color,
-          km,
+          km: +km,
           nickname,
           purchaseYear,
           userId: +userId,
           makerId,
           modelId,
           photo: fileConverted?.filename || '',
+          initialKm: +km,
         },
       });
 
@@ -155,7 +156,7 @@ class VehicleController {
         data: {
           color,
           nickname,
-          photo: fileConverted?.filename || '',
+          ...(fileConverted && { photo: fileConverted?.filename || '' }),
         },
       });
 

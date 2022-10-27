@@ -140,11 +140,12 @@ class UserController {
 
   async updateUser(request, response) {
     try {
-      const { userId } = request;
+      const { userId } = request.params;
+      const { name, email, oldPassword, newPassword } = request.body;
 
       const user = await database.user.findUnique({
         where: {
-          id: userId,
+          id: Number(userId),
         },
       });
 
@@ -152,12 +153,20 @@ class UserController {
         return response.status(404).json({ message: 'User not found' });
       }
 
+      if (newPassword) {
+        if (!(await compareHashes(oldPassword, user.password))) {
+          return response.status(400).json({ message: 'Invalid password' });
+        }
+      }
+
       await database.user.update({
         where: {
-          id: userId,
+          id: Number(userId),
         },
         data: {
-          ...request.body,
+          name,
+          email,
+          ...(newPassword && { password: await encryptPassword(newPassword) }),
         },
       });
 
@@ -171,7 +180,10 @@ class UserController {
   async listUsers(_request, response) {
     try {
       const users = await database.user.findMany({
-        include: { vehicles: true },
+        // include: { vehicles: true },
+        orderBy: {
+          id: 'asc',
+        },
       });
 
       if (!users) {

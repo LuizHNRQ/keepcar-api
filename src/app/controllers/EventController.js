@@ -12,6 +12,7 @@ class EventController {
         'eventTypeId',
         'date',
         'vehicleId',
+        'price',
       ];
 
       for (const field of requiredFields) {
@@ -22,14 +23,12 @@ class EventController {
         }
       }
 
-      const { title, km, description, eventTypeId, date, vehicleId } =
+      const { title, km, description, eventTypeId, date, vehicleId, price } =
         request.body;
 
       const fileConverted = request?.file;
 
-      console.log('fileconv->', fileConverted);
-
-      const vehicle = await database.events.create({
+      const event = await database.events.create({
         data: {
           title,
           km: +km,
@@ -37,11 +36,27 @@ class EventController {
           eventTypeId: +eventTypeId,
           date,
           vehicleId,
+          price: +price,
           pictures: fileConverted?.filename || '',
         },
       });
 
-      return response.status(201).json({ vehicle });
+      const vehicle = await database.vehicle.findUnique({
+        where: {
+          id: vehicleId,
+        },
+      });
+
+      await database.vehicle.update({
+        where: {
+          id: vehicleId,
+        },
+        data: {
+          km: vehicle.km > +km ? +vehicle.km : +km,
+        },
+      });
+
+      return response.status(201).json({ event });
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log(error);
@@ -155,9 +170,25 @@ class EventController {
         });
       });
 
-      return response
-        .status(200)
-        .json(eventsList.sort((a, b) => b.updatedAt - a.updatedAt));
+      const resFormatted = {
+        vehicles: vehicles.map((veh) => {
+          return {
+            id: veh.id,
+            maker: veh.maker,
+            model: veh.model,
+            year: veh.year,
+            plate: veh.plate,
+            updatedAt: veh.updatedAt,
+            eventsCount: veh.events?.length,
+            lastEvent:
+              veh.events?.sort((a, b) => b.updatedAt - a.updatedAt)[0]
+                ?.updatedAt || '',
+          };
+        }),
+        events: eventsList.sort((a, b) => b.updatedAt - a.updatedAt),
+      };
+
+      return response.status(200).json(resFormatted);
     } catch (error) {
       console.log(error);
       return response.status(500).json({ message: 'Internal server error' });
@@ -177,7 +208,7 @@ class EventController {
       const events = await database.events.findMany({
         where: { vehicleId },
         orderBy: {
-          date: 'desc',
+          km: 'desc',
         },
       });
 

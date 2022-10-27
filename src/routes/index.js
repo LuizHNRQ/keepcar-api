@@ -5,6 +5,7 @@ const EventTypeController = require('../app/controllers/EventTypeController');
 
 const UserController = require('../app/controllers/UserController');
 const VehicleController = require('../app/controllers/VehicleController');
+const VehicleShares = require('../app/controllers/VehicleShares');
 
 const authMiddleware = require('../app/middlewares/auth');
 
@@ -26,6 +27,7 @@ routes.post('/authenticate', UserController.authenticate);
 routes.get('/users', UserController.listUsers);
 
 routes.use(authMiddleware);
+routes.put('/user/:userId', UserController.updateUser);
 
 routes.post('/vehicles', upload.single('file'), VehicleController.store);
 routes.get('/vehicles', VehicleController.listVehicles);
@@ -47,5 +49,10 @@ routes.get('/eventuser/:userId', EventController.listEventsByUserId);
 
 routes.post('/eventtype', EventTypeController.store);
 routes.get('/eventtype', EventTypeController.listEventType);
+
+routes.post('/sharevehicle', VehicleShares.store);
+routes.get('/share/:keepcarId', VehicleShares.showVehicleByKeepcarId);
+routes.get('/shared/:vehicleId', VehicleShares.showActiveKeysByVehicleId);
+routes.put('/unshare/:keepCarId', VehicleShares.removeActiveKeepCarIdById);
 
 module.exports = routes;

@@ -53,7 +53,8 @@ model Vehicle {
   year         String
   plate        String
   color        String
-  km           String
+  initialKm    Decimal
+  km           Decimal
   purchaseYear String
   photo        String?
   makerId      String?
@@ -65,7 +66,8 @@ model Vehicle {
   User   User? @relation(fields: [userId], references: [id])
   userId Int?
 
-  events Events[]
+  events        Events[]
+  VehicleShares VehicleShares[]
 
   @@map("vehicles")
 }
@@ -73,9 +75,10 @@ model Vehicle {
 model Events {
   id          Int       @id @default(autoincrement())
   title       String
-  km          Int
+  km          Decimal
   description String
   pictures    String
+  price       Int?
   date        DateTime? @default(now()) @map("event_date")
   createdAt   DateTime? @default(now()) @map("created_at")
   updatedAt   DateTime? @updatedAt @map("updated_at")
@@ -91,4 +94,11 @@ model EventType {
   id     Int      @id @default(autoincrement())
   title  String
   Events Events[]
+}
+
+model VehicleShares {
+  id        String   @id
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
+  vehicleId String
+  expiresAt DateTime
 }
